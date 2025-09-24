@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -9,6 +10,8 @@ builder.Services.AddControllers();
 // Configure Entity Framework and SQLite
 builder.Services.AddDbContext<TaskTrackerApi.Data.AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IPasswordHasher<TaskTrackerApi.Models.User>, PasswordHasher<TaskTrackerApi.Models.User>>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
