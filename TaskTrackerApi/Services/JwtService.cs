@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -16,19 +17,20 @@ namespace TaskTrackerApi.Services
 
         public string GenerateToken(User user)
         {
-            // Implementation for generating JWT token
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["SecretKey"];
-            var key = Encoding.ASCII.GetBytes(secretKey);
+            // Update configuration section name to match Day 6 instructions
+            var jwtSettings = _configuration.GetSection("JwtSettings"); // Changed from "JwtSettings"
+            var secretKey = jwtSettings["SecretKey"]; // Changed from "SecretKey"
+            var key = Encoding.UTF8.GetBytes(secretKey); // Changed from ASCII to UTF8
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user.Username)
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Username), // Use standard JWT claims
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Unique identifier for the token
+                    new Claim("userId", user.Id.ToString()) // Add userId claim for TaskController
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpiryInMinutes"])),
+                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpireMinutes"])), // Changed from "ExpiryInMinutes"
                 Issuer = jwtSettings["Issuer"],
                 Audience = jwtSettings["Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
