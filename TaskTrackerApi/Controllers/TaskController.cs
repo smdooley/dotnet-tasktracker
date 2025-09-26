@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskTrackerApi.Data;
+using TaskTrackerApi.DTOs;
 using TaskTrackerApi.Models;
 
 namespace TaskTrackerApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     [Authorize]
+    [Route("api/[controller]")]
     public class TaskController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -25,6 +26,7 @@ namespace TaskTrackerApi.Controllers
             var userId = GetCurrentUserId();
             var tasks = await _context.TaskItems
                 .Where(t => t.UserId == userId)
+                .OrderByDescending(t => t.CreatedAt)
                 .ToListAsync();
             return Ok(tasks);
         }
@@ -36,12 +38,37 @@ namespace TaskTrackerApi.Controllers
             var userId = GetCurrentUserId();
             var task = await _context.TaskItems
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
             if (task == null)
             {
-                return NotFound();
+                return NotFound($"Task with ID {id} not found.");
             }
+
             return Ok(task);
-        }   
+        }
+
+        // POST: api/task
+        [HttpPost]
+        public async Task<ActionResult<TaskItem>> CreateTask(CreateTaskRequest request)
+        {
+            var userId = GetCurrentUserId();
+
+            var task = new TaskItem
+            {
+                Title = request.Title,
+                Description = request.Description,
+                DueDate = request.DueDate,
+                IsCompleted = false,
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            
+            _context.TaskItems.Add(task);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
+        }
 
         private int GetCurrentUserId()
         {
