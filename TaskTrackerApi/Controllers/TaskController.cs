@@ -63,11 +63,37 @@ namespace TaskTrackerApi.Controllers
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            
+
             _context.TaskItems.Add(task);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
+        }
+
+        // PUT: api/task/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTask(int id, UpdateTaskRequest request)
+        {
+            var userId = GetCurrentUserId();
+            var task = await _context.TaskItems
+                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+            if (task == null)
+            {
+                return NotFound($"Task with ID {id} not found.");
+            }
+
+            // Update task properties
+            task.Title = request.Title;
+            task.Description = request.Description;
+            task.DueDate = request.DueDate;
+            task.IsCompleted = request.IsCompleted;
+            task.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            // Return 204 NoContent to indicate successful update
+            return NoContent();
         }
 
         private int GetCurrentUserId()
