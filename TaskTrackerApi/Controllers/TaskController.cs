@@ -96,6 +96,26 @@ namespace TaskTrackerApi.Controllers
             return NoContent();
         }
 
+        // DELETE: api/task/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTask(int id)
+        {
+            var userId = GetCurrentUserId();
+            var task = await _context.TaskItems
+                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+            if (task == null)
+            {
+                return NotFound($"Task with ID {id} not found.");
+            }
+
+            _context.TaskItems.Remove(task);
+            await _context.SaveChangesAsync();
+
+            // Return 204 NoContent to indicate successful deletion
+            return NoContent();
+        }
+
         private int GetCurrentUserId()
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
