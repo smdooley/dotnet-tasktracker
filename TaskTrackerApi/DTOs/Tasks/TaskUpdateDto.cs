@@ -11,6 +11,7 @@ namespace TaskTrackerApi.DTOs.Tasks
         [StringLength(1000, ErrorMessage = "Description must be a maximum of 1000 characters")]
         public string? Description { get; set; }
 
+        [DataType(DataType.DateTime)]
         public DateTime? DueDate { get; set; }
 
         public bool IsCompleted { get; set; }
