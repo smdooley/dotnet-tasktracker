@@ -9,8 +9,8 @@ using AutoMapper;
 
 namespace TaskTrackerApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -36,11 +36,6 @@ namespace TaskTrackerApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
             if (existingUser != null)
@@ -67,11 +62,6 @@ namespace TaskTrackerApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
             if (user == null)

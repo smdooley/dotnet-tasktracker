@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskTrackerApi.Data;
-using TaskTrackerApi.DTOs;
 using TaskTrackerApi.DTOs.Tasks;
 using TaskTrackerApi.Models;
 
