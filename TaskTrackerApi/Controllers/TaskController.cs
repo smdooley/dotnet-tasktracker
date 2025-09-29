@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace TaskTrackerApi.Controllers
     public class TaskController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public TaskController(AppDbContext context)
+        public TaskController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Task
@@ -29,7 +32,9 @@ namespace TaskTrackerApi.Controllers
                 .Where(t => t.UserId == userId)
                 .OrderByDescending(t => t.CreatedAt)
                 .ToListAsync();
-            return Ok(tasks);
+            var response = _mapper.Map<List<TaskResponseDto>>(tasks);
+
+            return Ok(response);
         }
 
         // GET: api/task/{id}
@@ -45,7 +50,9 @@ namespace TaskTrackerApi.Controllers
                 return NotFound($"Task with ID {id} not found.");
             }
 
-            return Ok(task);
+            var response = _mapper.Map<TaskResponseDto>(task);
+
+            return Ok(response);
         }
 
         // POST: api/task
@@ -54,21 +61,15 @@ namespace TaskTrackerApi.Controllers
         {
             var userId = GetCurrentUserId();
 
-            var task = new TaskItem
-            {
-                Title = request.Title,
-                Description = request.Description,
-                DueDate = request.DueDate,
-                IsCompleted = false,
-                UserId = userId,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            var task = _mapper.Map<TaskItem>(request);
+            task.UserId = userId;
 
             _context.TaskItems.Add(task);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
+            var response = _mapper.Map<TaskResponseDto>(task);
+
+            return CreatedAtAction(nameof(GetTask), new { id = response.Id }, response);
         }
 
         // PUT: api/task/{id}
