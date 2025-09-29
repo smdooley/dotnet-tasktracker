@@ -4,10 +4,10 @@ namespace TaskTrackerApi.DTOs.Auth
 {
     public class LoginRequest
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required")]
         public string Username { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
     }
 }
