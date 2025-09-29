@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskTrackerApi.Data;
+using TaskTrackerApi.DTOs.Errors;
 using TaskTrackerApi.DTOs.Tasks;
 using TaskTrackerApi.Models;
 
@@ -46,7 +47,13 @@ namespace TaskTrackerApi.Controllers
 
             if (task == null)
             {
-                return NotFound($"Task with ID {id} not found.");
+                // return NotFound($"Task with ID {id} not found.");
+                return NotFound(new ErrorResponse
+                {
+                    StatusCode = 404,
+                    Message = $"Task with ID {id} not found.",
+                    Details = $"No task found with ID {id} for the current user."
+                });
             }
 
             var response = _mapper.Map<TaskResponseDto>(task);
@@ -81,7 +88,13 @@ namespace TaskTrackerApi.Controllers
 
             if (task == null)
             {
-                return NotFound($"Task with ID {id} not found.");
+                // return NotFound($"Task with ID {id} not found.");
+                return NotFound(new ErrorResponse
+                {
+                    StatusCode = 404,
+                    Message = $"Task with ID {id} not found.",
+                    Details = $"No task found with ID {id} for the current user."
+                });
             }
 
             // Update task properties
@@ -107,7 +120,13 @@ namespace TaskTrackerApi.Controllers
 
             if (task == null)
             {
-                return NotFound($"Task with ID {id} not found.");
+                // return NotFound($"Task with ID {id} not found.");
+                return NotFound(new ErrorResponse
+                {
+                    StatusCode = 404,
+                    Message = $"Task with ID {id} not found.",
+                    Details = $"No task found with ID {id} for the current user."
+                });
             }
 
             _context.TaskItems.Remove(task);
