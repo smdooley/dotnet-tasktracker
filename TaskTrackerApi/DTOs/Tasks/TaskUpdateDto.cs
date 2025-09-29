@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TaskTrackerApi.DTOs
+namespace TaskTrackerApi.DTOs.Tasks
 {
-    public class UpdateTaskRequest
+    public class TaskUpdateDto
     {
         [Required]
         [StringLength(200, MinimumLength = 1)]

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TaskTrackerApi.Data;
 using TaskTrackerApi.Models;
-using TaskTrackerApi.DTOs;
+using TaskTrackerApi.DTOs.Auth;
 using Microsoft.EntityFrameworkCore;
 using TaskTrackerApi.Services;
 
@@ -86,7 +86,7 @@ namespace TaskTrackerApi.Controllers
             // Generate JWT token
             var token = _jwtService.GenerateToken(user);
             var expiryInMinutes = Convert.ToDouble(_configuration["JwtSettings:ExpiryInMinutes"]);
-            var response = new LoginResponse
+            var response = new AuthResponse
             {
                 Token = token,
                 Username = user.Username,

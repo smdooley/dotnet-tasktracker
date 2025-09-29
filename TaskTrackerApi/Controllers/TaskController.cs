@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskTrackerApi.Data;
 using TaskTrackerApi.DTOs;
+using TaskTrackerApi.DTOs.Tasks;
 using TaskTrackerApi.Models;
 
 namespace TaskTrackerApi.Controllers
@@ -49,7 +50,7 @@ namespace TaskTrackerApi.Controllers
 
         // POST: api/task
         [HttpPost]
-        public async Task<ActionResult<TaskItem>> CreateTask(CreateTaskRequest request)
+        public async Task<ActionResult<TaskItem>> CreateTask(TaskCreateDto request)
         {
             var userId = GetCurrentUserId();
 
@@ -72,7 +73,7 @@ namespace TaskTrackerApi.Controllers
 
         // PUT: api/task/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTask(int id, UpdateTaskRequest request)
+        public async Task<IActionResult> UpdateTask(int id, TaskUpdateDto request)
         {
             var userId = GetCurrentUserId();
             var task = await _context.TaskItems
