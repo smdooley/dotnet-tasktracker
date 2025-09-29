@@ -5,6 +5,7 @@ using TaskTrackerApi.Models;
 using TaskTrackerApi.DTOs.Auth;
 using Microsoft.EntityFrameworkCore;
 using TaskTrackerApi.Services;
+using AutoMapper;
 
 namespace TaskTrackerApi.Controllers
 {
@@ -16,13 +17,15 @@ namespace TaskTrackerApi.Controllers
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IJwtService _jwtService;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public AuthController(AppDbContext context, IPasswordHasher<User> passwordHasher, IJwtService jwtService, IConfiguration configuration)
+        public AuthController(AppDbContext context, IPasswordHasher<User> passwordHasher, IJwtService jwtService, IConfiguration configuration, IMapper mapper)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _jwtService = jwtService;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -86,12 +89,16 @@ namespace TaskTrackerApi.Controllers
             // Generate JWT token
             var token = _jwtService.GenerateToken(user);
             var expiryInMinutes = Convert.ToDouble(_configuration["JwtSettings:ExpiryInMinutes"]);
-            var response = new AuthResponse
-            {
-                Token = token,
-                Username = user.Username,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(expiryInMinutes)
-            };
+            // var response = new AuthResponse
+            // {
+            //     Token = token,
+            //     Username = user.Username,
+            //     ExpiresAt = DateTime.UtcNow.AddMinutes(expiryInMinutes)
+            // };
+
+            var response = _mapper.Map<AuthResponse>(user);
+            response.Token = token;
+            response.ExpiresAt = DateTime.UtcNow.AddMinutes(expiryInMinutes);
 
             return Ok(response);
         }
